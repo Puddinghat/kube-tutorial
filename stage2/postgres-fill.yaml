@@ -1,0 +1,53 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: postgres-script
+data:
+  SQL_SCRIPT: |-
+    CREATE TABLE test (text lesson);
+    INSERT INTO test VALUES ("kubernetes is awesome");
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: postgres-fill
+spec:
+  backoffLimit: 1
+  activeDeadlineSeconds: 30
+  template:
+    spec:
+      volumes:
+        - name: script
+          configMap:
+            name: postgres-script
+            items:
+              - key: SQL_SCRIPT
+                path: SQL_SCRIPT_DUMP
+      containers:
+        - name: postgres-fill
+          image: 'docker.io/bitnami/postgresql:latest'
+          volumeMounts:
+            - name: '<which name?>'
+              mountPath: '/'
+          env:
+            - name: PG_HOST
+              value: '<postgres ip>'
+            - name: PG_PORT
+              value: '5432'
+            - name: PG_USER
+              value: 'kube'
+            - name: PG_DBNAME
+              value: 'kube-lesson'
+            - name: PGPASSWORD
+              value: 'lesson'
+            - name: SQL_SCRIPT
+              valueFrom:
+                configMapKeyRef:
+                  name: <which name?>
+                  key: SQL_SCRIPT
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - psql -U "${PG_USER}" --host "${PG_HOST}" --port "${PG_PORT}" --dbname "${PG_DBNAME}" --command="${SQL_SCRIPT}"
+      restartPolicy: Never

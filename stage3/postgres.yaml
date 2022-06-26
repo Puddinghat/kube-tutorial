@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-postgres
+  namespace: <ppi-kürzel>
+spec:
+  volumes:
+    - <what needs placement here?>
+  containers:
+    - name: postgres
+      image: postgres
+      resources:
+        limits:
+          memory: '128Mi'
+          cpu: '500m'
+      ports:
+        - containerPort: 5432
+      env:
+        - name: 'POSTGRES_USER'
+          value: 'kube'
+        - name: 'POSTGRES_PASSWORD'
+          value: 'lesson'
+        - name: 'POSTGRES_DB'
+          value: 'kube-lesson'
+      volumeMounts:
+        - name: postgres-persistance
+          mountPath: /var/lib/postgresql/data
