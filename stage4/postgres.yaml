@@ -4,8 +4,13 @@ metadata:
   name: simple-postgres
   namespace: <accountname>
 spec:
+  metadata:
+    labels:
+      app: privatebin-postgres
   volumes:
-    - <what needs placement here?>
+    - name: postgres-persistance
+      persistentVolumeClaim:
+        claimName: postgres-pvc
   containers:
     - name: postgres
       image: postgres

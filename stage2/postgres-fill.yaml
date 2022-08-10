@@ -4,8 +4,8 @@ metadata:
   name: postgres-script
 data:
   SQL_SCRIPT: |-
-    CREATE TABLE test (text lesson);
-    INSERT INTO test VALUES ("kubernetes is awesome");
+    CREATE TABLE test (lesson text);
+    INSERT INTO test VALUES ('kubernetes is awesome');
 ---
 apiVersion: batch/v1
 kind: Job
@@ -13,7 +13,7 @@ metadata:
   name: postgres-fill
 spec:
   backoffLimit: 1
-  activeDeadlineSeconds: 30
+  ttlSecondsAfterFinished: 120
   template:
     spec:
       volumes:
@@ -28,7 +28,7 @@ spec:
           image: 'docker.io/bitnami/postgresql:latest'
           volumeMounts:
             - name: '<which name?>'
-              mountPath: '/'
+              mountPath: '/script'
           env:
             - name: PG_HOST
               value: '<postgres ip>'

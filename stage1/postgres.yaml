@@ -2,10 +2,10 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: simple-postgres
-  namespace: <ppi-kürzel>
+  #namespace: <accountname>
 spec:
   containers:
-    - name: postgres
+    - name: postgres-container
       image: postgres
       resources:
         limits:
